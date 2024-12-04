@@ -36,6 +36,27 @@ fn has_xmas_at_position_in_direction(
     true
 }
 
+fn get_from_grid(grid: &Vec<Vec<char>>, coordinates: (i32, i32)) -> char {
+    let (x, y) = coordinates;
+    grid[y as usize][x as usize]
+}
+
+fn has_x_mas_at_position(grid: &Vec<Vec<char>>, coordinates: (i32, i32)) -> bool {
+    let (x, y) = coordinates;
+    if grid[y as usize][x as usize] != 'A' {
+        return false;
+    }
+    let up_left = (x - 1, y - 1);
+    let bottom_right = (x + 1, y + 1);
+    let up_right = (x + 1, y - 1);
+    let bottom_left = (x - 1, y + 1);
+    // Jeez
+    ((get_from_grid(grid, up_left) == 'M' && get_from_grid(grid, bottom_right) == 'S')
+        || (get_from_grid(grid, up_left) == 'S' && get_from_grid(grid, bottom_right) == 'M'))
+        && ((get_from_grid(grid, up_right) == 'M' && get_from_grid(grid, bottom_left) == 'S')
+            || (get_from_grid(grid, up_right) == 'S' && get_from_grid(grid, bottom_left) == 'M'))
+}
+
 fn count_all_xmases(grid: &Vec<Vec<char>>) -> i32 {
     let mut count = 0;
     let mut xmas_positions_and_directions = Vec::<((usize, usize), (i32, i32))>::new();
@@ -71,6 +92,22 @@ fn count_all_xmases(grid: &Vec<Vec<char>>) -> i32 {
     count
 }
 
+fn count_all_x_mases(grid: &Vec<Vec<char>>) -> i32 {
+    let mut count = 0;
+    for (y, chars) in grid.iter().enumerate() {
+        for x in 0..chars.len() {
+            // Any cells on the edge can't be it
+            if x == 0 || y == 0 || x == chars.len() - 1 || y == grid.len() - 1 {
+                continue;
+            }
+            if has_x_mas_at_position(grid, (x as i32, y as i32)) {
+                count += 1;
+            }
+        }
+    }
+    count
+}
+
 fn day_4() {
     println!("Puzzle 1!");
     let word_search_text = std::fs::read_to_string("inputs/day_4.txt").unwrap();
@@ -80,6 +117,10 @@ fn day_4() {
         .collect();
 
     let count = count_all_xmases(&word_search_grid);
+    println!("count: {}", count);
+
+    println!("Puzzle 2!");
+    let count = count_all_x_mases(&word_search_grid);
     println!("count: {}", count);
 }
 
