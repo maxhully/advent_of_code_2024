@@ -1,13 +1,16 @@
 fn is_safe_level(level: &Vec<i32>) -> bool {
-    let mut prev_ordering = level[0].cmp(&level[1]);
+    let initial_ordering = level[0].cmp(&level[1]);
+    // Must be all either increasing or decreasing
+    if initial_ordering.is_eq() {
+        return false;
+    }
     let pairs = level.iter().zip(level.iter().skip(1));
     for (prev, next) in pairs {
         let ordering = prev.cmp(next);
         // The levels are either all increasing or all decreasing.
-        if ordering.is_eq() || (ordering != prev_ordering) {
+        if ordering != initial_ordering {
             return false;
         }
-        prev_ordering = ordering;
         let gap = prev.abs_diff(*next);
         // Any two adjacent levels differ by at least one and at most three.
         // (We already covered the "at least one" part with our ordering handling above)
@@ -32,6 +35,8 @@ fn day_2() {
 
     let num_safe_levels: i32 = levels.iter().map(|level| is_safe_level(level) as i32).sum();
     println!("num_safe_levels = {}", num_safe_levels);
+
+    // Puzzle 2
 }
 
 fn main() {
